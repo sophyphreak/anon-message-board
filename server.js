@@ -5,10 +5,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const port = process.env.PORT || 3000;
 const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
+const { getPort } = require('./handlers/getPort');
+const port = getPort();
 
 const app = express();
 
