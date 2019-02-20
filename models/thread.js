@@ -20,11 +20,15 @@ const Thread = mongoose.model('Thread', {
   },
   delete_password: {
     type: String,
-    default: 'iamthepassword'
+    required: true
   },
   replies: {
     type: Array,
     default: []
+  },
+  board: {
+    type: String,
+    required: true
   }
 });
 

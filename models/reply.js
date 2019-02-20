@@ -12,11 +12,15 @@ const Reply = mongoose.model('Reply', {
   },
   delete_password: {
     type: String,
-    default: 'iamthepassword'
+    required: true
   },
   reported: {
     type: Boolean,
     default: false
+  },
+  thread_id: {
+    type: String,
+    required: true
   }
 });
 
