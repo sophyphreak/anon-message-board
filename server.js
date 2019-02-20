@@ -2,8 +2,8 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const expect = require('chai').expect;
 const cors = require('cors');
+const helmet = require('helmet');
 
 const port = process.env.PORT || 3000;
 const apiRoutes = require('./routes/api.js');
@@ -11,6 +11,14 @@ const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
 
 const app = express();
+
+app.use(
+  helmet({
+    referrerPolicy: {
+      policy: 'same-origin'
+    }
+  })
+);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
