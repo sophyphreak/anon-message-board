@@ -111,8 +111,8 @@ suite('Functional Tests', () => {
               if (index !== 0) {
                 const prevThread = threads[index - 1];
                 assert(
-                  prevThread.bumped_on.valueOf() <
-                    curThread.bumped_on.valueOf(),
+                  moment(prevThread.bumped_on).valueOf() <
+                    moment(curThread.bumped_on).valueOf(),
                   'the previous bumped_on should be before the current one'
                 );
               }
@@ -143,7 +143,7 @@ suite('Functional Tests', () => {
                 'should have bumped_on property'
               );
               assert.isNumber(
-                curThread.bumped_on.valueOf(),
+                moment(curThread.bumped_on).valueOf(),
                 'bumped_on should be valid moment object'
               );
               assert.property(
@@ -159,7 +159,8 @@ suite('Functional Tests', () => {
               if (index !== 0) {
                 const prevReply = replies[index - 1];
                 assert(
-                  prevReply.bumped_on.valueOf() < curReply.bumped_on.valueOf(),
+                  moment(prevReply.bumped_on).valueOf() <
+                    moment(curReply.bumped_on).valueOf(),
                   'the previous bumped_on should be before the current one'
                 );
               }
@@ -181,7 +182,7 @@ suite('Functional Tests', () => {
                 'should have created_on property'
               );
               assert.isNumber(
-                curReply.created_on.valueOf(),
+                moment(curReply.created_on).valueOf(),
                 'created_on should be valid moment object'
               );
               assert.property(
@@ -193,6 +194,7 @@ suite('Functional Tests', () => {
                 curReply.thread_id,
                 'thread_id should be a string'
               );
+              assert.property(curReply, 'board', 'should have a board');
             });
             done();
           });
