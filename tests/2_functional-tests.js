@@ -252,7 +252,28 @@ suite('Functional Tests', () => {
       });
     });
 
-    suite('PUT', () => {});
+    suite('PUT', () => {
+      test('report a thread with success', async () => {
+        const { _id } = await Thread.findOne({ text: 'before thread 2' });
+        chai
+          .request(server)
+          .put('/api/threads/test')
+          .send({ thread_id: _id })
+          .end((err, res) => {
+            const { text } = res;
+            assert(res.status, 200, 'res.status should be 200');
+            assert.isString(text);
+            assert.equal(
+              text,
+              'success',
+              'should receive success for reporting thread'
+            );
+            if (err) {
+              console.log('error:', err);
+            }
+          });
+      });
+    });
   });
 
   suite('API ROUTING FOR /api/replies/:board', () => {
