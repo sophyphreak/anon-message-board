@@ -159,7 +159,6 @@ suite('Functional Tests', () => {
               assert.property(curThread, 'board', 'should have board property');
               assert.isString(curThread.board, 'board should be a string');
             });
-            console.log(replies);
             replies.forEach((curReply, index) => {
               if (index !== 0) {
                 const prevReply = replies[index - 1];
@@ -201,12 +200,59 @@ suite('Functional Tests', () => {
               );
               assert.property(curReply, 'board', 'should have a board');
             });
+            if (err) {
+              console.log('error:', err);
+            }
             done();
           });
       });
     });
 
-    suite('DELETE', () => {});
+    suite('DELETE', () => {
+      test('delete a thread successfully', async done => {
+        const { _id, delete_password } = await Thread.findOne({
+          text: 'before thread 1'
+        });
+        chai
+          .request(server)
+          .delete('/api/threads/test')
+          .send({ thread_id: _id, delete_password })
+          .end((err, res) => {
+            assert.equal(res.status, 200, 'status should be 200');
+            const textReponse = res.body;
+            assert.isString(textReponse);
+            assert.equal(
+              textReponse,
+              'success',
+              'the response for passing correct id and password should be delete success'
+            );
+            if (err) {
+              console.log('error:', err);
+            }
+            done();
+          });
+      });
+      test('fail to delete a thread', async done => {
+        const { _id } = await Thread.findOne({ text: 'before thread 2' });
+        chai
+          .request(server)
+          .delete('/api/threads/test')
+          .send({ thread_id: _id, delete_password: 'wrongPassword ' })
+          .end((err, res) => {
+            const textReponse = res.body;
+            assert.isString(textReponse);
+            assert.equal(
+              textReponse,
+              'incorrect password',
+              'the response for passing wrong password should be delete failure'
+            );
+            if (err) {
+              console.log('error:', err);
+            }
+            done();
+          });
+      });
+    });
 
     suite('PUT', () => {});
   });
