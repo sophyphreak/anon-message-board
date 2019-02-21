@@ -29,6 +29,14 @@ module.exports = app => {
         )
           .sort({ bumped_on: -1 })
           .limit(3);
+        threads.forEach(thread => {
+          thread.reported = undefined;
+          thread.delete_password = undefined;
+        });
+        replies.forEach(reply => {
+          reply.reported = undefined;
+          reply.delete_password = undefined;
+        });
         res.send({ threads, replies });
       } catch (e) {
         console.log(e);
