@@ -41,6 +41,25 @@ module.exports = app => {
       } catch (e) {
         console.log(e);
       }
+    })
+
+    .delete(async (req, res) => {
+      try {
+        const board = req.params.board;
+        const { thread_id, delete_password } = req.body;
+        const thread = await Thread.findById(thread_id);
+        if (
+          board === thread.board &&
+          delete_password == thread.delete_password
+        ) {
+          await Thread.deleteOne({ _id: thread_id });
+          res.send('success');
+        } else {
+          res.send('incorrect password');
+        }
+      } catch (e) {
+        console.log(e);
+      }
     });
 
   app.route('/api/replies/:board');
