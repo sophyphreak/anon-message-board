@@ -21,6 +21,10 @@ const Reply = mongoose.model('Reply', {
   thread_id: {
     type: String,
     required: true
+  },
+  board: {
+    type: String,
+    required: true
   }
 });
 
