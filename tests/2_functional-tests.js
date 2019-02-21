@@ -9,9 +9,9 @@
 const chaiHttp = require('chai-http');
 const chai = require('chai');
 const assert = chai.assert;
-const moment = require('moment');
-
 const server = require('../server');
+
+const { prepareTestDatabase } = require('./before/prepareTestDatabase');
 const { Thread } = require('../models/thread');
 const { Reply } = require('../models/reply');
 
@@ -22,6 +22,7 @@ const password = 'iamthepassword';
 suite('Functional Tests', () => {
   suite('API ROUTING FOR /api/threads/:board', () => {
     before(() => {
+      prepareTestDatabase();
       const threadOne = new Thread({
         text: 'before thread 1',
         delete_password: password,
@@ -34,6 +35,14 @@ suite('Functional Tests', () => {
       });
       threadOne.save();
       threadTwo.save();
+    });
+    after(() => {
+      Thread.remove({}, err => {
+        if (err) console.log(err);
+      });
+      Reply.remove({}, err => {
+        if (err) console.log(err);
+      });
     });
     suite('POST', () => {
       test('creates a new thread', done => {
@@ -89,7 +98,10 @@ suite('Functional Tests', () => {
 
     suite('GET', () => {
       test('gets a list of all threads', done => {
-        chai.request(server);
+        chai
+          .request(server)
+          .get('/api/threads/test')
+          .query();
       });
     });
 
