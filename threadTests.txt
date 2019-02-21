@@ -1,10 +1,6 @@
 ﻿thread tests
 
 
-POST
-input: text, delete_password
-output: _id(string), text(string), created_on(date), bumped_on(date), reported(boolean), delete_password(string), replies(array), board(string)
-
 GET
 input: /api/replies/test
 output: array of most recent 10 bumped threads 

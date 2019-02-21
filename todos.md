@@ -1,7 +1,6 @@
 TODOS:
 
 - create before file that loads up the database with
-  - 13 threads
   - 5 replies
     so that GET tests can be easily made
     should include
