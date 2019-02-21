@@ -209,7 +209,7 @@ suite('Functional Tests', () => {
     });
 
     suite('DELETE', () => {
-      test('delete a thread successfully', async done => {
+      test('delete a thread successfully', async () => {
         const { _id, delete_password } = await Thread.findOne({
           text: 'before thread 1'
         });
@@ -218,38 +218,36 @@ suite('Functional Tests', () => {
           .delete('/api/threads/test')
           .send({ thread_id: _id, delete_password })
           .end((err, res) => {
+            const { text } = res;
             assert.equal(res.status, 200, 'status should be 200');
-            const textReponse = res.body;
-            assert.isString(textReponse);
+            assert.isString(text);
             assert.equal(
-              textReponse,
+              text,
               'success',
               'the response for passing correct id and password should be delete success'
             );
             if (err) {
               console.log('error:', err);
             }
-            done();
           });
       });
-      test('fail to delete a thread', async done => {
+      test('fail to delete a thread', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
         chai
           .request(server)
           .delete('/api/threads/test')
           .send({ thread_id: _id, delete_password: 'wrongPassword ' })
           .end((err, res) => {
-            const textReponse = res.body;
-            assert.isString(textReponse);
+            const { text } = res;
+            assert.isString(text);
             assert.equal(
-              textReponse,
+              text,
               'incorrect password',
               'the response for passing wrong password should be delete failure'
             );
             if (err) {
               console.log('error:', err);
             }
-            done();
           });
       });
     });
