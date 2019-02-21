@@ -259,7 +259,7 @@ suite('Functional Tests', () => {
           .request(server)
           .put('/api/threads/test')
           .send({ thread_id: _id })
-          .end((err, res) => {
+          .end(async (err, res) => {
             const { text } = res;
             assert(res.status, 200, 'res.status should be 200');
             assert.isString(text);
@@ -268,6 +268,8 @@ suite('Functional Tests', () => {
               'success',
               'should receive success for reporting thread'
             );
+            const thread = await Thread.findById(_id);
+            assert(thread.reported, 'thread.reported should now be true');
             if (err) {
               console.log('error:', err);
             }
