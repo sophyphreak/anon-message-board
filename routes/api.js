@@ -15,10 +15,13 @@ module.exports = app => {
 
     .get((req, res) => {
       board = req.params.board;
-      const threadList = Thread.find({ board })
+      const threads = Thread.find({ board })
         .sort({ bumped_on: -1 })
         .limit(10);
-      const replyList = Reply.find({ board });
+      const replies = Reply.find({ board })
+        .sort({ bumped_on: -1 })
+        .limit(3);
+      res.send({ threads, replies });
     });
 
   app.route('/api/replies/:board');
