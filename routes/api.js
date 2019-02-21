@@ -52,10 +52,26 @@ module.exports = app => {
           board === thread.board &&
           delete_password == thread.delete_password
         ) {
-          await Thread.deleteOne({ _id: thread_id });
+          await Thread.findByIdAndDelete(thread_id);
           res.send('success');
         } else {
           res.send('incorrect password');
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    })
+
+    .put(async (req, res) => {
+      try {
+        const board = req.params.board;
+        const { thread_id } = req.body;
+        const thread = await Thread.findById(thread_id);
+        if (thread.board === board) {
+          await Thread.findByIdAndUpdate(thread_id, { reported: true });
+          res.send('success');
+        } else {
+          res.send('failure. board incorrect.');
         }
       } catch (e) {
         console.log(e);
