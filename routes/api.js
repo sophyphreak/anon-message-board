@@ -27,7 +27,7 @@ module.exports = app => {
           { board },
           err => err && console.log(err)
         )
-          .sort({ bumped_on: -1 })
+          .sort({ created_on: -1 })
           .limit(3);
         threads.forEach(thread => {
           thread.reported = undefined;
