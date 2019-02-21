@@ -1,5 +1,5 @@
-const { Thread } = require('../models/thread');
-const { Reply } = require('../models/reply');
+const { Thread } = require('../../models/thread');
+const { Reply } = require('../../models/reply');
 const { getThreadFixtures } = require('../fixtures/getThreadFixtures');
 const { getReplyFixtures } = require('../fixtures/getReplyFixtures');
 
