@@ -8,6 +8,7 @@
 
 const chaiHttp = require('chai-http');
 const chai = require('chai');
+const moment = require('moment');
 const assert = chai.assert;
 const server = require('../server');
 
@@ -50,11 +51,11 @@ suite('Functional Tests', () => {
           .request(server)
           .post('/api/threads/test')
           .send({
-            text: 'new thread test',
+            text: 'new thread text',
             delete_password: password
           })
           .end((err, res) => {
-            const thread = JSON.parse(res.body);
+            const thread = res.body;
             assert.equal(res.status, 200, 'res.status should be 200');
             assert.isString(thread._id, 'thread._id should be a string');
             assert.isString(thread.text, 'thread.text should be string');
@@ -73,11 +74,11 @@ suite('Functional Tests', () => {
               'thread.delete_password should be iamthepassword'
             );
             assert.isNumber(
-              thread.created_on.valueOf(),
+              moment(thread.created_on).valueOf(),
               'thread.created_on should be a moment object'
             );
             assert.isNumber(
-              thread.bumped_on.valueOf(),
+              moment(thread.bumped_on).valueOf(),
               'thread.bumped_on should be a moment object'
             );
             assert.isBoolean(
@@ -102,7 +103,7 @@ suite('Functional Tests', () => {
           .request(server)
           .get('/api/threads/test')
           .end((err, res) => {
-            const { threads, replies } = JSON.parse(res.body);
+            const { threads, replies } = res.body;
             assert.equal(res.status, 200, 'res.status should be 200');
             assert(threads.length === 10, 'should be 10 threads');
             assert(replies.length === 3, 'should be 3 replies');
