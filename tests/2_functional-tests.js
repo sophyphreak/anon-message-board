@@ -23,27 +23,29 @@ const password = 'iamthepassword';
 suite('Functional Tests', () => {
   suite('API ROUTING FOR /api/threads/:board', () => {
     before(() => {
+      Thread.deleteMany({}, err => {
+        if (err) console.log(err);
+      });
+      Reply.deleteMany({}, err => {
+        if (err) console.log(err);
+      });
       prepareTestDatabase();
       const threadOne = new Thread({
         text: 'before thread 1',
         delete_password: password,
-        board: 'test'
+        board: 'test',
+        bumped_on: moment('1988-01-01'),
+        created_on: moment('1988-01-01')
       });
       const threadTwo = new Thread({
         text: 'before thread 2',
         delete_password: password,
-        board: 'test'
+        board: 'test',
+        bumped_on: moment('1988-01-01'),
+        created_on: moment('1988-01-01')
       });
       threadOne.save();
       threadTwo.save();
-    });
-    after(() => {
-      Thread.remove({}, err => {
-        if (err) console.log(err);
-      });
-      Reply.remove({}, err => {
-        if (err) console.log(err);
-      });
     });
     suite('POST', () => {
       test('creates a new thread', done => {
@@ -52,7 +54,9 @@ suite('Functional Tests', () => {
           .post('/api/threads/test')
           .send({
             text: 'new thread text',
-            delete_password: password
+            delete_password: password,
+            bumped_on: moment('1988-01-01'),
+            created_on: moment('1988-01-01')
           })
           .end((err, res) => {
             const thread = res.body;
@@ -111,9 +115,9 @@ suite('Functional Tests', () => {
               if (index !== 0) {
                 const prevThread = threads[index - 1];
                 assert(
-                  moment(prevThread.bumped_on).valueOf() <
+                  moment(prevThread.bumped_on).valueOf() >
                     moment(curThread.bumped_on).valueOf(),
-                  'the previous bumped_on should be before the current one'
+                  'the previous bumped_on thread should be after the current one'
                 );
               }
               assert.notProperty(
@@ -134,7 +138,7 @@ suite('Functional Tests', () => {
                 'should have created_on property'
               );
               assert.isNumber(
-                curThread.created_on.valueOf(),
+                moment(curThread.created_on).valueOf(),
                 'created_on should be valid moment object'
               );
               assert.property(
@@ -155,13 +159,14 @@ suite('Functional Tests', () => {
               assert.property(curThread, 'board', 'should have board property');
               assert.isString(curThread.board, 'board should be a string');
             });
+            console.log(replies);
             replies.forEach((curReply, index) => {
               if (index !== 0) {
                 const prevReply = replies[index - 1];
                 assert(
-                  moment(prevReply.bumped_on).valueOf() <
-                    moment(curReply.bumped_on).valueOf(),
-                  'the previous bumped_on should be before the current one'
+                  moment(prevReply.created_on).valueOf() >
+                    moment(curReply.created_on).valueOf(),
+                  'the previous created_on reply should be after the current one'
                 );
               }
               assert.notProperty(
