@@ -6,6 +6,7 @@ const { Reply } = require('../models/reply');
 module.exports = app => {
   app
     .route('/api/threads/:board')
+
     .post(async (req, res) => {
       let thread = req.body;
       thread.board = req.params.board;
@@ -78,5 +79,40 @@ module.exports = app => {
       }
     });
 
-  app.route('/api/replies/:board');
+  app
+    .route('/api/replies/:board')
+
+    .post(async (req, res) => {
+      try {
+        const replyData = req.body;
+        replyData.board = req.params.board;
+        const reply = new Reply(replyData);
+        await reply.save(err => err && console.log(err));
+        const { _id, text, created_on, delete_password, reported } = reply;
+        await Thread.findByIdAndUpdate(
+          replyData.thread_id,
+          {
+            $push: {
+              replies: {
+                _id,
+                text,
+                created_on,
+                delete_password,
+                reported
+              }
+            }
+          },
+          err => err && console.log(err)
+        );
+        res.redirect(`/b/${reply.board}/${reply.thread_id}`);
+      } catch (e) {
+        console.log(e);
+      }
+    })
+
+    .get(async (req, res) => {})
+
+    .delete(async (req, res) => {})
+
+    .put(async (req, res) => {});
 };
