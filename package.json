@@ -8,7 +8,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "NODE_ENV=test mocha --ui tdd tests/2_functional-tests.js"
+    "test": "NODE_ENV=test mocha tests/2_functional-tests.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -37,10 +37,10 @@
     }
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-http": "^3.0.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
     "husky": "^1.3.1",
-    "mocha": "^3.2.0",
+    "mocha": "^6.0.1",
     "prettier": "1.16.4",
     "pretty-quick": "^1.10.0"
   }
