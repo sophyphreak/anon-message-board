@@ -58,10 +58,10 @@ suite('Functional Tests', () => {
             bumped_on: moment('1988-01-01'),
             created_on: moment('1988-01-01')
           })
-          .end((err, res) => {
-            const thread = res.body;
+          .end(async (err, res) => {
+            const thread = await Thread.findOne({ text: 'new thread text' });
             assert.equal(res.status, 200, 'res.status should be 200');
-            assert.isString(thread._id, 'thread._id should be a string');
+            assert(thread._id, 'thread._id should exist');
             assert.isString(thread.text, 'thread.text should be string');
             assert.equal(
               thread.text,
