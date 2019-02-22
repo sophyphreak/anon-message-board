@@ -378,11 +378,92 @@ suite('Functional Tests', () => {
               reply.created_on,
               'thread bumped_on and reply created_on should be equal'
             );
+            if (err) {
+              console.log('error:', err);
+            }
           });
       });
     });
 
-    suite('GET', () => {});
+    suite('GET', () => {
+      test('get a list of all replies for a given thread', async () => {
+        const { _id } = await Thread.findOne({ text: 'before thread 2' });
+        return chai
+          .request(server)
+          .get(`/api/replies/test`)
+          .query({
+            thread_id: _id
+          })
+          .end((err, res) => {
+            const { thread, replies } = res.body;
+            assert.isOk(thread._id, 'thread._id should exist');
+            assert.isString(thread.text, 'thread.text should be a string');
+            assert.equal(
+              thread.text,
+              'before thread 2',
+              'thread.text should equal input'
+            );
+            assert.isNumber(
+              moment(thread.created_on).valueOf(),
+              'created_on should be a valid moment object'
+            );
+            assert.isNumber(
+              moment(thread.bumped_on).valueOf(),
+              'bumped_on should be a valid moment object'
+            );
+            assert.notProperty(
+              thread.reported,
+              'thread.reported should not be received'
+            );
+            assert.notProperty(
+              thread.delete_password,
+              'thread.delete_password should not be recieved'
+            );
+            assert.isArray(thread.replies, 'thread.replies should be an array');
+            assert.isString(thread.board, 'thread.board should be a string');
+            assert.equal(thread.board, 'test', 'board should be test');
+            assert.isArray(replies, 'replies should be an array');
+            assert.isObject(
+              replies[0],
+              'first index of replies array should be an object'
+            );
+
+            replies.forEach(reply => {
+              assert.isString(reply.text, 'reply.text should be a string');
+              assert.isNumber(
+                moment(reply.created_on).valueOf(),
+                'reply.created_on should be a valid moment object'
+              );
+              assert.notProperty(
+                reply.delete_password,
+                'reply.delete_password should not exist'
+              );
+              assert.notProperty(
+                reply.reported,
+                'reply.reported should not be sent'
+              );
+              assert.isString(
+                reply.thread_id,
+                'reply.thread_id should be a string'
+              );
+              assert.equal(
+                reply.thread_id,
+                thread._id,
+                'thread _id and reply.thread_id should be equal'
+              );
+              assert.isString(reply.board, 'reply.board should be a string');
+              assert.equal(
+                reply.board,
+                'test',
+                'reply.board should equal test'
+              );
+            });
+            if (err) {
+              console.log('error:', err);
+            }
+          });
+      });
+    });
 
     suite('PUT', () => {});
 
