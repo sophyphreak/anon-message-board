@@ -213,11 +213,11 @@ suite('Functional Tests', () => {
         const { _id, delete_password } = await Thread.findOne({
           text: 'before thread 1'
         });
-        chai
+        return chai
           .request(server)
           .delete('/api/threads/test')
           .send({ thread_id: _id, delete_password })
-          .end((err, res) => {
+          .end(async (err, res) => {
             const { text } = res;
             assert.equal(res.status, 200, 'status should be 200');
             assert.isString(text);
@@ -226,6 +226,10 @@ suite('Functional Tests', () => {
               'success',
               'the response for passing correct id and password should be delete success'
             );
+            const thread = await Thread.findOne({
+              text: 'before thread 1'
+            });
+            assert.isNotOk(thread, 'thread should not exist in database');
             if (err) {
               console.log('error:', err);
             }
@@ -233,11 +237,11 @@ suite('Functional Tests', () => {
       });
       test('fail to delete a thread', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
-        chai
+        return chai
           .request(server)
           .delete('/api/threads/test')
           .send({ thread_id: _id, delete_password: 'wrongPassword ' })
-          .end((err, res) => {
+          .end(async (err, res) => {
             const { text } = res;
             assert.isString(text);
             assert.equal(
@@ -245,6 +249,10 @@ suite('Functional Tests', () => {
               'incorrect password',
               'the response for passing wrong password should be delete failure'
             );
+            const thread = await Thread.findOne({
+              text: 'before thread 2'
+            });
+            assert(thread, 'thread should exist in database');
             if (err) {
               console.log('error:', err);
             }
@@ -255,7 +263,7 @@ suite('Functional Tests', () => {
     suite('PUT', () => {
       test('report a thread with success', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
-        chai
+        return chai
           .request(server)
           .put('/api/threads/test')
           .send({ thread_id: _id })
@@ -279,7 +287,39 @@ suite('Functional Tests', () => {
   });
 
   suite('API ROUTING FOR /api/replies/:board', () => {
-    suite('POST', () => {});
+    suite('POST', () => {
+      test('submit a new reply to a board and thread', async () => {
+        const { _id } = await Thread.findOne({ text: 'before thread 2' });
+        return chai
+          .request(server)
+          .post('/api/replies/test')
+          .send({
+            text: 'new reply in test',
+            delete_password: password,
+            thread_id: _id
+          })
+          .end((err, res) => {
+            const reply = Reply.findOne({ text: 'new reply in test' });
+            // console.log(reply);
+            assert.equal(res.status, 200, 'res.status should be 200');
+            assert.isString(reply.text, 'reply.text should be a string');
+            assert.equal(
+              reply.text,
+              'new reply in test',
+              'reply.text should equal input text'
+            );
+            assert.isString(
+              reply.delete_password,
+              'reply.delete_password should be string'
+            );
+            assert.equal(
+              reply.delete_password,
+              password,
+              'reply.delete_password should be saved password'
+            );
+          });
+      });
+    });
 
     suite('GET', () => {});
 
