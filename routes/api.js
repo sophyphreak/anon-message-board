@@ -11,7 +11,7 @@ module.exports = app => {
       thread.board = req.params.board;
       const doc = new Thread(thread);
       await doc.save(err => err && console.log(err));
-      res.send(doc);
+      res.redirect(`/b/${thread.board}`);
     })
 
     .get(async (req, res) => {
