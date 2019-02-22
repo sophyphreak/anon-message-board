@@ -1,5 +1,11 @@
 TODOS:
 
+---
+
+So the test suite is a pile of fail. fix it!
+
+---
+
 I can GET an entire thread with all it's replies from /api/replies/{board}?thread_id={thread_id}. The reported and delete_passwords fields will not be sent.
 
 - api
