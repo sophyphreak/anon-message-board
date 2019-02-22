@@ -298,9 +298,8 @@ suite('Functional Tests', () => {
             delete_password: password,
             thread_id: _id
           })
-          .end((err, res) => {
-            const reply = Reply.findOne({ text: 'new reply in test' });
-            // console.log(reply);
+          .end(async (err, res) => {
+            const reply = await Reply.findOne({ text: 'new reply in test' });
             assert.equal(res.status, 200, 'res.status should be 200');
             assert.isString(reply.text, 'reply.text should be a string');
             assert.equal(
@@ -316,6 +315,76 @@ suite('Functional Tests', () => {
               reply.delete_password,
               password,
               'reply.delete_password should be saved password'
+            );
+            assert.isString(
+              reply.thread_id,
+              'reply.thread_id should be a string'
+            );
+            assert.isNumber(
+              moment(reply.created_on).valueOf(),
+              'reply.created_on should be valid moment object'
+            );
+            assert.isBoolean(
+              reply.reported,
+              'reply.reported should be a boolean'
+            );
+            assert.equal(
+              reply.reported,
+              false,
+              'reply.reported should be false'
+            );
+            assert.isString(reply.board, 'reply.board should be a string');
+            assert.equal(reply.board, 'test', 'reply.board should be test');
+
+            const { bumped_on, replies } = await Thread.findById(
+              reply.thread_id
+            );
+            assert.isArray(replies, 'replies should be an array');
+            assert.equal(
+              replies.length,
+              1,
+              'replies array should have a length of 1'
+            );
+            assert.isOk(replies[0]._id, 'replies[0]._id should exist');
+            assert.isString(
+              replies[0].text,
+              'replies[0].text in thread array should be a string'
+            );
+            assert.equal(
+              replies[0].text,
+              'new reply in test',
+              'replies[0].text should equal input value'
+            );
+            assert.isNumber(
+              moment(replies[0].created_on).valueOf(),
+              'replies[0].created_on should be valid moment object'
+            );
+            assert.isString(
+              replies[0].delete_password,
+              'replies[0].delete_password should be a string'
+            );
+            assert.equal(
+              replies[0].delete_password,
+              password,
+              'replies[0].delete_password should be the password'
+            );
+            assert.isBoolean(
+              replies[0].reported,
+              'replies[0].reported should be a boolean'
+            );
+            assert.equal(
+              replies[0].reported,
+              false,
+              'replies[0].reported should be false'
+            );
+            assert.isNumber(
+              moment(bumped_on).valueOf(),
+              'thread bumped_on should be a valid moment object'
+            );
+            assert.equal(
+              bumped_on,
+              reply.created_on,
+              'thread bumped_on and reply created_on should be equal'
             );
           });
       });
