@@ -17,9 +17,18 @@ const prepareTestDatabase = async () => {
     reply['thread_id'] = threadId;
     const doc = new Reply(reply);
     doc.save();
+    const { _id, text, created_on, delete_password, reported } = doc;
     Thread.findByIdAndUpdate(threadId, {
       bumped_on: reply.created_on,
-      $push: { replies: reply._id }
+      $push: {
+        replies: {
+          _id,
+          text,
+          created_on,
+          delete_password,
+          reported
+        }
+      }
     });
   });
 };
