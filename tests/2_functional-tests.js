@@ -40,8 +40,8 @@ describe('Functional Tests', () => {
       threadTwo.save();
     });
     describe('POST', () => {
-      it('creates a new thread', done => {
-        chai
+      it('creates a new thread', async () => {
+        const res = await chai
           .request(server)
           .post('/api/threads/test')
           .send({
@@ -49,48 +49,40 @@ describe('Functional Tests', () => {
             delete_password: password,
             bumped_on: moment('1988-01-01'),
             created_on: moment('1988-01-01')
-          })
-          .end(async (err, res) => {
-            assert.equal(1, 0, '1 equals 0');
-            const thread = await Thread.findOne({ text: 'new thread text' });
-            assert.equal(res.status, 200, 'res.status should be 200');
-            assert(thread._id, 'thread._id should exist');
-            assert.isString(thread.text, 'thread.text should be string');
-            assert.equal(
-              thread.text,
-              'new thread text',
-              'new thread text should equal input text'
-            );
-            assert.isString(
-              thread.delete_password,
-              'thread.delete_password should be string'
-            );
-            assert.equal(
-              thread.delete_password,
-              password,
-              'thread.delete_password should be iamthepassword'
-            );
-            assert.isNumber(
-              moment(thread.created_on).valueOf(),
-              'thread.created_on should be a moment object'
-            );
-            assert.isNumber(
-              moment(thread.bumped_on).valueOf(),
-              'thread.bumped_on should be a moment object'
-            );
-            assert.isBoolean(
-              thread.reported,
-              'thread.reported should be a boolean'
-            );
-            assert.equal(
-              thread.reported,
-              false,
-              'thread.reported should be false'
-            );
-            assert.isArray(thread.replies, 'thread.replies should be an array');
-            assert.isNotOk(thread.replies[0], 'thread.replies should be empty');
-            done();
           });
+        const thread = await Thread.findOne({ text: 'new thread text' });
+        assert.equal(res.status, 200, 'res.status should be 200');
+        assert(thread._id, 'thread._id should exist');
+        assert.isString(thread.text, 'thread.text should be string');
+        assert.equal(
+          thread.text,
+          'new thread text',
+          'new thread text should equal input text'
+        );
+        assert.isString(
+          thread.delete_password,
+          'thread.delete_password should be string'
+        );
+        assert.equal(
+          thread.delete_password,
+          password,
+          'thread.delete_password should be iamthepassword'
+        );
+        assert.isNumber(
+          moment(thread.created_on).valueOf(),
+          'thread.created_on should be a moment object'
+        );
+        assert.isNumber(
+          moment(thread.bumped_on).valueOf(),
+          'thread.bumped_on should be a moment object'
+        );
+        assert.isBoolean(
+          thread.reported,
+          'thread.reported should be a boolean'
+        );
+        assert.equal(thread.reported, false, 'thread.reported should be false');
+        assert.isArray(thread.replies, 'thread.replies should be an array');
+        assert.isNotOk(thread.replies[0], 'thread.replies should be empty');
       });
     });
 
