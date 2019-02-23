@@ -110,7 +110,28 @@ module.exports = app => {
       }
     })
 
-    .get(async (req, res) => {})
+    .get(async (req, res) => {
+      try {
+        const thread_id = req.query.thread_id;
+        const replies = await Reply.find({ thread_id }).sort({
+          created_on: -1
+        });
+        replies.forEach(reply => {
+          reply.reported = undefined;
+          reply.delete_password = undefined;
+        });
+        const thread = await Thread.findById(thread_id);
+        thread.reported = undefined;
+        thread.delete_password = undefined;
+        // const result = { thread, replies };
+        // console.log(result)
+        // res.send(result)
+        // res.send({ thread, replies });
+        res.send('something really simple');
+      } catch (e) {
+        console.log(e);
+      }
+    })
 
     .delete(async (req, res) => {})
 
