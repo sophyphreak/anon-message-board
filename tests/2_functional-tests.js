@@ -12,8 +12,8 @@ chai.use(chaiHttp);
 
 const password = 'iamthepassword';
 
-suite('Functional Tests', () => {
-  suite('API ROUTING FOR /api/threads/:board', () => {
+describe('Functional Tests', () => {
+  describe('API ROUTING FOR /api/threads/:board', () => {
     before(() => {
       Thread.deleteMany({}, err => {
         if (err) console.log(err);
@@ -39,8 +39,8 @@ suite('Functional Tests', () => {
       threadOne.save();
       threadTwo.save();
     });
-    suite('POST', () => {
-      test('creates a new thread', done => {
+    describe('POST', () => {
+      it('creates a new thread', done => {
         chai
           .request(server)
           .post('/api/threads/test')
@@ -51,6 +51,7 @@ suite('Functional Tests', () => {
             created_on: moment('1988-01-01')
           })
           .end(async (err, res) => {
+            assert.equal(1, 0, '1 equals 0');
             const thread = await Thread.findOne({ text: 'new thread text' });
             assert.equal(res.status, 200, 'res.status should be 200');
             assert(thread._id, 'thread._id should exist');
@@ -93,12 +94,14 @@ suite('Functional Tests', () => {
       });
     });
 
-    suite('GET', () => {
-      test('gets a list of most recent 10 bumped threads and 3 bumped replies threads', done => {
-        chai
+    describe('GET', () => {
+      it('gets a list of most recent 10 bumped threads and 3 bumped replies threads', done => {
+        return chai
           .request(server)
           .get('/api/threads/test')
           .end((err, res) => {
+            assert(1 === 0, '1 equals 0');
+
             const { threads, replies } = res.body;
             assert.equal(res.status, 200, 'res.status should be 200');
             assert(threads.length === 10, 'should be 10 threads');
@@ -200,40 +203,36 @@ suite('Functional Tests', () => {
       });
     });
 
-    suite('DELETE', () => {
-      test('delete a thread successfully', async () => {
+    describe('DELETE', () => {
+      it('delete a thread successfully', async () => {
         const { _id, delete_password } = await Thread.findOne({
           text: 'before thread 1'
         });
-        return chai
+        const res = await chai
           .request(server)
           .delete('/api/threads/test')
-          .send({ thread_id: _id, delete_password })
-          .end(async (err, res) => {
-            const { text } = res;
-            assert.equal(res.status, 200, 'status should be 200');
-            assert.isString(text);
-            assert.equal(
-              text,
-              'success',
-              'the response for passing correct id and password should be delete success'
-            );
-            const thread = await Thread.findOne({
-              text: 'before thread 1'
-            });
-            assert.isNotOk(thread, 'thread should not exist in database');
-            if (err) {
-              console.log('error:', err);
-            }
-          });
+          .send({ thread_id: _id, delete_password });
+        const { text } = res;
+        assert.equal(res.status, 200, 'status should be 200');
+        assert.isString(text);
+        assert.equal(
+          text,
+          'success',
+          'the response for passing correct id and password should be delete success'
+        );
+        const thread = await Thread.findOne({
+          text: 'before thread 1'
+        });
+        assert.isNotOk(thread, 'thread should not exist in database');
       });
-      test('fail to delete a thread', async () => {
+      it('fail to delete a thread', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
         return chai
           .request(server)
           .delete('/api/threads/test')
           .send({ thread_id: _id, delete_password: 'wrongPassword ' })
           .end(async (err, res) => {
+            assert(1 === 0, '1 equals 0');
             const { text } = res;
             assert.isString(text);
             assert.equal(
@@ -252,14 +251,15 @@ suite('Functional Tests', () => {
       });
     });
 
-    suite('PUT', () => {
-      test('report a thread with success', async () => {
+    describe('PUT', () => {
+      it('report a thread with success', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
         return chai
           .request(server)
           .put('/api/threads/test')
           .send({ thread_id: _id })
           .end(async (err, res) => {
+            assert(1 === 0, '1 equals 0');
             const { text } = res;
             assert(res.status, 200, 'res.status should be 200');
             assert.isString(text);
@@ -278,9 +278,9 @@ suite('Functional Tests', () => {
     });
   });
 
-  suite('API ROUTING FOR /api/replies/:board', () => {
-    suite('POST', () => {
-      test('submit a new reply to a board and thread', async () => {
+  describe('API ROUTING FOR /api/replies/:board', () => {
+    describe('POST', () => {
+      it('submit a new reply to a board and thread', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
         return chai
           .request(server)
@@ -291,6 +291,7 @@ suite('Functional Tests', () => {
             thread_id: _id
           })
           .end(async (err, res) => {
+            assert(1 === 0, '1 equals 0');
             const reply = await Reply.findOne({ text: 'new reply in test' });
             assert.equal(res.status, 200, 'res.status should be 200');
             assert.isString(reply.text, 'reply.text should be a string');
@@ -385,88 +386,93 @@ suite('Functional Tests', () => {
       });
     });
 
-    suite('GET', () => {
-      test('get a list of all replies for a given thread', async () => {
+    describe('GET', () => {
+      it('get a list of all replies for a given thread', async () => {
         const { _id } = await Thread.findOne({ text: 'before thread 2' });
-        return chai
-          .request(server)
-          .get(`/api/replies/test`)
-          .query({
-            thread_id: _id
-          })
-          .end((err, res) => {
-            const { thread, replies } = res.body;
-            assert.isOk(thread._id, 'thread._id should exist');
-            assert.isString(thread.text, 'thread.text should be a string');
-            assert.equal(
-              thread.text,
-              'before thread 2',
-              'thread.text should equal input'
-            );
-            assert.isNumber(
-              moment(thread.created_on).valueOf(),
-              'created_on should be a valid moment object'
-            );
-            assert.isNumber(
-              moment(thread.bumped_on).valueOf(),
-              'bumped_on should be a valid moment object'
-            );
-            assert.notProperty(
-              thread.reported,
-              'thread.reported should not be received'
-            );
-            assert.notProperty(
-              thread.delete_password,
-              'thread.delete_password should not be recieved'
-            );
-            assert.isArray(thread.replies, 'thread.replies should be an array');
-            assert.isString(thread.board, 'thread.board should be a string');
-            assert.equal(thread.board, 'test', 'board should be test');
-            assert.isArray(replies, 'replies should be an array');
-            assert.isObject(
-              replies[0],
-              'first index of replies array should be an object'
-            );
-
-            replies.forEach(reply => {
-              assert.isString(reply.text, 'reply.text should be a string');
+        return (
+          chai
+            .request(server)
+            .get(`/api/replies/test?thread_id=${_id.toString()}`)
+            // .query({
+            //   thread_id: _id.toString()
+            // })
+            .end((err, res) => {
+              const { thread, replies } = res.body;
+              assert.isOk(thread._id, 'thread._id should exist');
+              assert.isString(thread.text, 'thread.text should be a string');
+              assert.equal(
+                thread.text,
+                'before thread 2',
+                'thread.text should equal input'
+              );
               assert.isNumber(
-                moment(reply.created_on).valueOf(),
-                'reply.created_on should be a valid moment object'
+                moment(thread.created_on).valueOf(),
+                'created_on should be a valid moment object'
+              );
+              assert.isNumber(
+                moment(thread.bumped_on).valueOf(),
+                'bumped_on should be a valid moment object'
               );
               assert.notProperty(
-                reply.delete_password,
-                'reply.delete_password should not exist'
+                thread.reported,
+                'thread.reported should not be received'
               );
               assert.notProperty(
-                reply.reported,
-                'reply.reported should not be sent'
+                thread.delete_password,
+                'thread.delete_password should not be recieved'
               );
-              assert.isString(
-                reply.thread_id,
-                'reply.thread_id should be a string'
+              assert.isArray(
+                thread.replies,
+                'thread.replies should be an array'
               );
-              assert.equal(
-                reply.thread_id,
-                thread._id,
-                'thread _id and reply.thread_id should be equal'
+              assert.isString(thread.board, 'thread.board should be a string');
+              assert.equal(thread.board, 'test', 'board should be test');
+              assert.isArray(replies, 'replies should be an array');
+              assert.isObject(
+                replies[0],
+                'first index of replies array should be an object'
               );
-              assert.isString(reply.board, 'reply.board should be a string');
-              assert.equal(
-                reply.board,
-                'test',
-                'reply.board should equal test'
-              );
-            });
-            if (err) {
-              console.log('error:', err);
-            }
-          });
+
+              replies.forEach(reply => {
+                assert.isString(reply.text, 'reply.text should be a string');
+                assert.isNumber(
+                  moment(reply.created_on).valueOf(),
+                  'reply.created_on should be a valid moment object'
+                );
+                assert.notProperty(
+                  reply.delete_password,
+                  'reply.delete_password should not exist'
+                );
+                assert.notProperty(
+                  reply.reported,
+                  'reply.reported should not be sent'
+                );
+                assert.isString(
+                  reply.thread_id,
+                  'reply.thread_id should be a string'
+                );
+                assert.equal(
+                  reply.thread_id,
+                  thread._id,
+                  'thread _id and reply.thread_id should be equal'
+                );
+                assert.isString(reply.board, 'reply.board should be a string');
+                assert.equal(
+                  reply.board,
+                  'test',
+                  'reply.board should equal test'
+                );
+              });
+              if (err) {
+                console.log('error:', err);
+              }
+            })
+        );
       });
     });
 
-    suite('PUT', () => {});
+    describe('PUT', () => {});
 
-    suite('DELETE', () => {});
+    describe('DELETE', () => {});
   });
 });
