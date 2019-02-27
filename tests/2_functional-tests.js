@@ -427,7 +427,9 @@ describe('Functional Tests', () => {
 
     describe('PUT', () => {
       it('will change a reply.reported propert to true', async () => {
-        const { _id, thread_id } = Reply.findOne({ text: 'before reply 2' });
+        const { _id, thread_id } = await Reply.findOne({
+          text: 'before reply 2'
+        });
         const res = await chai
           .request(server)
           .put('/api/replies/test')

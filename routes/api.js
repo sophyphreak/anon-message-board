@@ -145,5 +145,13 @@ module.exports = app => {
       }
     })
 
-    .put(async (req, res) => {});
+    .put(async (req, res) => {
+      try {
+        const { reply_id, thread_id } = req.body;
+        await Reply.findByIdAndUpdate(reply_id, { reported: true });
+        res.send('success');
+      } catch (e) {
+        console.log(e);
+      }
+    });
 };
