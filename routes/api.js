@@ -124,11 +124,7 @@ module.exports = app => {
         const thread = await Thread.findById(thread_id);
         thread.reported = undefined;
         thread.delete_password = undefined;
-        // const result = { thread, replies };
-        // console.log(result)
-        // res.send(result)
-        // res.send({ thread, replies });
-        res.send('something really simple');
+        res.send({ thread, replies });
       } catch (e) {
         console.log(e);
       }
