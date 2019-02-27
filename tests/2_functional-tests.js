@@ -443,9 +443,8 @@ describe('Functional Tests', () => {
         assert.isNotOk(deletedReply, 'deleted reply should no longer exist');
       });
       it('will not delete a reply given an incorrect id', async () => {
-        assert.equal(1, 0, 'expect 1 to equal 0');
         const { _id, thread_id } = await Reply.findOne({
-          text: 'before reply 2 '
+          text: 'before reply 2'
         });
         const res = await chai
           .request(server)
