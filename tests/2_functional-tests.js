@@ -432,7 +432,7 @@ describe('Functional Tests', () => {
         const { _id, thread_id, delete_password } = await Reply.findOne({
           text: 'before reply 1'
         });
-        const res = chai
+        const res = await chai
           .request(server)
           .delete('/api/replies/test')
           .send({ thread_id, reply_id: _id, delete_password });

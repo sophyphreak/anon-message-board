@@ -130,7 +130,19 @@ module.exports = app => {
       }
     })
 
-    .delete(async (req, res) => {})
+    .delete(async (req, res) => {
+      try {
+        const { reply_id, thread_id, delete_password } = req.body;
+        const reply = await Reply.findById(reply_id);
+        if (delete_password !== reply.delete_password) {
+          res.send('incorrect password');
+        }
+        await Reply.findByIdAndDelete(reply_id);
+        res.send('success');
+      } catch (e) {
+        console.log(e);
+      }
+    })
 
     .put(async (req, res) => {});
 };
