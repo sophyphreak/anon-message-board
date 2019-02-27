@@ -14,14 +14,14 @@ const password = 'iamthepassword';
 
 describe('Functional Tests', () => {
   describe('API ROUTING FOR /api/threads/:board', () => {
-    before(() => {
-      Thread.deleteMany({}, err => {
+    before(async () => {
+      await Thread.deleteMany({}, err => {
         if (err) console.log(err);
       });
-      Reply.deleteMany({}, err => {
+      await Reply.deleteMany({}, err => {
         if (err) console.log(err);
       });
-      prepareTestDatabase();
+      await prepareTestDatabase();
       const threadOne = new Thread({
         text: 'before thread 1',
         delete_password: password,
@@ -36,8 +36,24 @@ describe('Functional Tests', () => {
         bumped_on: moment('1988-01-01'),
         created_on: moment('1988-01-01')
       });
-      threadOne.save();
-      threadTwo.save();
+      const replyOne = new Reply({
+        text: 'before reply 1',
+        delete_password: password,
+        thread_id: threadTwo._id,
+        board: 'test',
+        created_on: moment('1988-01-01')
+      });
+      const replyTwo = new Reply({
+        text: 'before reply 2',
+        delete_password: password,
+        thread_id: threadTwo._id,
+        board: 'test',
+        created_on: moment('1988-01-01')
+      });
+      await threadOne.save();
+      await threadTwo.save();
+      await replyOne.save();
+      await replyTwo.save();
     });
     describe('POST', () => {
       it('creates a new thread', async () => {
@@ -411,6 +427,21 @@ describe('Functional Tests', () => {
 
     describe('PUT', () => {});
 
-    describe('DELETE', () => {});
+    describe('DELETE', () => {
+      it('will delete a reply given the correct id and board', async () => {
+        const { _id, thread_id, delete_password } = await Reply.findOne({
+          text: 'before reply 1'
+        });
+        const res = chai
+          .request(server)
+          .delete('/api/replies/test')
+          .send({ thread_id, reply_id: _id, delete_password });
+        assert.equal(res.status, 200, 'res.status should be 200');
+        assert.equal(res.text, 'success');
+        const deletedReply = await Reply.findOne({ text: 'before reply 1' });
+        assert.isNotOk(deletedReply, 'deleted reply should no longer exist');
+      });
+      it('will not delete a reply given an incorrect id', async () => {});
+    });
   });
 });
