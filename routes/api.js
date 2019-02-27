@@ -87,9 +87,9 @@ module.exports = app => {
         const replyData = req.body;
         replyData.board = req.params.board;
         const reply = new Reply(replyData);
-        await reply.save(err => err && console.log(err));
+        reply.save(err => err && console.log(err));
         const { _id, text, created_on, delete_password, reported } = reply;
-        await Thread.findByIdAndUpdate(
+        Thread.findByIdAndUpdate(
           replyData.thread_id,
           {
             $push: {
@@ -100,7 +100,8 @@ module.exports = app => {
                 delete_password,
                 reported
               }
-            }
+            },
+            bumped_on: created_on
           },
           err => err && console.log(err)
         );
