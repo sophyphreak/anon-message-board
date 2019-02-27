@@ -437,11 +437,34 @@ describe('Functional Tests', () => {
           .delete('/api/replies/test')
           .send({ thread_id, reply_id: _id, delete_password });
         assert.equal(res.status, 200, 'res.status should be 200');
+        assert.isString(res.text);
         assert.equal(res.text, 'success');
         const deletedReply = await Reply.findOne({ text: 'before reply 1' });
         assert.isNotOk(deletedReply, 'deleted reply should no longer exist');
       });
-      it('will not delete a reply given an incorrect id', async () => {});
+      it('will not delete a reply given an incorrect id', async () => {
+        assert.equal(1, 0, 'expect 1 to equal 0');
+        const { _id, thread_id } = await Reply.findOne({
+          text: 'before reply 2 '
+        });
+        const res = await chai
+          .request(server)
+          .delete('/api/replies/test')
+          .send({
+            reply_id: _id,
+            thread_id,
+            delete_password: 'i am most certainly not the password'
+          });
+        assert.equal(res.status, 200, 'res.status should be 200');
+        assert.isString(res.text, 'res.text should be a string');
+        assert.equal(
+          res.text,
+          'incorrect password',
+          'res.text should be incorrect password'
+        );
+        const notDeletedReply = await Reply.findOne({ text: 'before reply 2' });
+        assert.isOk(notDeletedReply, 'reply should still exist in database');
+      });
     });
   });
 });
