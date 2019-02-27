@@ -329,8 +329,8 @@ describe('Functional Tests', () => {
           'thread bumped_on should be a valid moment object'
         );
         assert.equal(
-          bumped_on,
-          reply.created_on,
+          moment(bumped_on).valueOf(),
+          moment(reply.created_on).valueOf(),
           'thread bumped_on and reply created_on should be equal'
         );
       });
