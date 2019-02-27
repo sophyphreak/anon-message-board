@@ -360,11 +360,13 @@ describe('Functional Tests', () => {
           'bumped_on should be a valid moment object'
         );
         assert.notProperty(
-          thread.reported,
+          thread,
+          'reported',
           'thread.reported should not be received'
         );
         assert.notProperty(
-          thread.delete_password,
+          thread,
+          'delete_password',
           'thread.delete_password should not be recieved'
         );
         assert.isArray(thread.replies, 'thread.replies should be an array');
@@ -383,11 +385,13 @@ describe('Functional Tests', () => {
             'reply.created_on should be a valid moment object'
           );
           assert.notProperty(
-            reply.delete_password,
+            reply,
+            'delete_password',
             'reply.delete_password should not exist'
           );
           assert.notProperty(
-            reply.reported,
+            reply,
+            'reported',
             'reply.reported should not be sent'
           );
           assert.isString(
