@@ -425,7 +425,30 @@ describe('Functional Tests', () => {
       });
     });
 
-    describe('PUT', () => {});
+    describe('PUT', () => {
+      it('will change a reply.reported propert to true', async () => {
+        const { _id, thread_id } = Reply.findOne({ text: 'before reply 2' });
+        const res = await chai
+          .request(server)
+          .put('/api/replies/test')
+          .send({
+            reply_id: _id,
+            thread_id
+          });
+        assert.equal(res.status, 200, 'res.status should be 200');
+        assert.isString(res.text, 'res.text should be a string');
+        assert.equal(res.text, 'success', 'res.text should be success');
+        const reportedReply = await Reply.findOne({ text: 'before reply 2' });
+        assert.isBoolean(
+          reportedReply.reported,
+          'reported property should be boolean'
+        );
+        assert.isTrue(
+          reportedReply.reported,
+          'reported property should be true'
+        );
+      });
+    });
 
     describe('DELETE', () => {
       it('will delete a reply given the correct id and board', async () => {
