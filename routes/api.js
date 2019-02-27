@@ -137,7 +137,7 @@ module.exports = app => {
         if (delete_password !== reply.delete_password) {
           res.send('incorrect password');
         } else {
-          await Reply.findByIdAndDelete(reply_id);
+          await Reply.findByIdAndUpdate(reply_id, { text: '[deleted]' });
           res.send('success');
         }
       } catch (e) {

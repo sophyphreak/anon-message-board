@@ -426,7 +426,7 @@ describe('Functional Tests', () => {
     });
 
     describe('PUT', () => {
-      it('will change a reply.reported propert to true', async () => {
+      it('will change a reply.reported property to true', async () => {
         const { _id, thread_id } = await Reply.findOne({
           text: 'before reply 2'
         });
@@ -453,7 +453,7 @@ describe('Functional Tests', () => {
     });
 
     describe('DELETE', () => {
-      it('will delete a reply given the correct id and board', async () => {
+      it('will change reply to [deleted] given the correct id', async () => {
         const { _id, thread_id, delete_password } = await Reply.findOne({
           text: 'before reply 1'
         });
@@ -464,8 +464,16 @@ describe('Functional Tests', () => {
         assert.equal(res.status, 200, 'res.status should be 200');
         assert.isString(res.text);
         assert.equal(res.text, 'success');
-        const deletedReply = await Reply.findOne({ text: 'before reply 1' });
-        assert.isNotOk(deletedReply, 'deleted reply should no longer exist');
+        const deletedReply = await Reply.findById(_id);
+        assert.isString(
+          deletedReply.text,
+          'deleted reply text should be a string'
+        );
+        assert.equal(
+          deletedReply.text,
+          '[deleted]',
+          'deleted reply text value should be [deleted]'
+        );
       });
       it('will not delete a reply given an incorrect id', async () => {
         const { _id, thread_id } = await Reply.findOne({
