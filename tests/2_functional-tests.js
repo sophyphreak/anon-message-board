@@ -427,14 +427,14 @@ describe('Functional Tests', () => {
 
     describe('PUT', () => {
       it('will change a reply.reported property to true', async () => {
-        const { _id, thread_id } = await Reply.findOne({
+        const { _id: reply_id, thread_id } = await Reply.findOne({
           text: 'before reply 2'
         });
         const res = await chai
           .request(server)
           .put('/api/replies/test')
           .send({
-            reply_id: _id,
+            reply_id,
             thread_id
           });
         assert.equal(res.status, 200, 'res.status should be 200');
@@ -454,13 +454,17 @@ describe('Functional Tests', () => {
 
     describe('DELETE', () => {
       it('will change reply to [deleted] given the correct id', async () => {
-        const { _id, thread_id, delete_password } = await Reply.findOne({
+        const {
+          _id: reply_id,
+          thread_id,
+          delete_password
+        } = await Reply.findOne({
           text: 'before reply 1'
         });
         const res = await chai
           .request(server)
           .delete('/api/replies/test')
-          .send({ thread_id, reply_id: _id, delete_password });
+          .send({ thread_id, reply_id, delete_password });
         assert.equal(res.status, 200, 'res.status should be 200');
         assert.isString(res.text);
         assert.equal(res.text, 'success');
@@ -476,14 +480,14 @@ describe('Functional Tests', () => {
         );
       });
       it('will not delete a reply given an incorrect id', async () => {
-        const { _id, thread_id } = await Reply.findOne({
+        const { _id: reply_id, thread_id } = await Reply.findOne({
           text: 'before reply 2'
         });
         const res = await chai
           .request(server)
           .delete('/api/replies/test')
           .send({
-            reply_id: _id,
+            _id,
             thread_id,
             delete_password: 'i am most certainly not the password'
           });
